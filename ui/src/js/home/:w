@@ -1,0 +1,134 @@
+<!--Start Header-->
+<header class="navbar">
+    <div class="container-fluid expanded-panel">
+        <div class="row">
+            <div id="logo" class="col-xs-12 col-sm-2">
+                <a href="">Next Wealth</a>
+            </div>
+            <div id="top-panel" class="col-xs-12 col-sm-10">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 top-panel-right">
+                        <ul class="nav navbar-nav pull-right panel-menu">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle account" data-toggle="dropdown">
+                                    <div class="avatar">
+                                        <img src="/images/user.svg" alt="" />
+                                    </div>
+                                    <i class="fa fa-angle-down pull-right"></i>
+                                    <div class="user-mini pull-right">
+                                        <span class="welcome">Name</span>
+                                        <span>Role</span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="/auth/logout">
+                                            <i class="fa fa-power-off"></i>
+                                            <span>Logout</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!--End Header-->
+<!--Start Container-->
+<div id="main" class="container-fluid">
+    <div class="row">
+        <div id="sidebar-left" class="col-xs-2 col-sm-2">
+            <ul class="nav main-menu">
+                <li>
+                    <a href="" class="ajax-link">
+                        <i class="fa fa-table"></i>
+                        <span>Add JD</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="http://nw.headrun.com:8086/admin/api/agent/add/" class="">
+                        <i class="fa fa-table"></i>
+                         <span>Add Agent</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="">
+                        <i class="fa fa-table"></i>
+                         <span>Add SPOC</span>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="">
+                        <i class="fa fa-table"></i>
+                         <span>Add Location</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--Start Content-->
+        <div id="content" class="col-xs-12 col-sm-10">
+            <div>
+               <!--<a ng-if="user_role == 'Admin' " href="http://nw.headrun.com:8086/admin/" style="float:right" target="_blank">admin</a>-->
+               <br></br>
+               <div class="row" style="margin-left: 0px;">
+                  <div class="col-md-4">
+                     <select class="form-control drop_down" ng-model="JDdefault" ng-init="JDdefault" ng-change="dtInstance.changeData('/api/candidates/?jd='+JDdefault)" data-ng-options="jd for jd in JDs">
+                        <!--<option id = "jddrop" value="">Select JD</option>-->
+                     </select>
+                  </div>
+               </div>
+               </br>
+               <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+                  <div class="col-md-12">
+                     <table datatable="" dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="table-bordered row-border hover"></table>
+                  </div>
+               </div>
+               <button ng-if="user_role == 'Admin' " type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add</button>
+               <div class="modal fade" id="myModal" role="dialog">
+                  <div class="modal-dialog">
+                     <!-- Modal content-->
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal">&times;</button>
+                           <h4 class="modal-title">Enter Details</h4>
+                        </div>
+                        <div class="modal-body">
+                           <form ng-submit="submit()">
+                              <p>Name</p>
+                              <input id = "text" type="text" ng-model="text" placeholder="name" /><br>
+                              <p>Walk in Date</p>
+                              <input id="date" type="date" ng-model="date" name="bday"><br>
+                              <p>Job Description</p>
+                              <select id = "sel" class="form-control" ng-model="selected" data-ng-options="jd for jd in JDs"><br>
+                              <option value="">Select JD</option>
+                              <input type="submit" id="submit" value="Submit" />
+                           </form>
+                        </div>
+                        <div class="modal-footer">
+                           <p id="display"></p>
+                           <button id="close" ng-click="clickHandler()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="fileuploader">Upload</div>
+        </div>
+        <!--End Content-->
+<script>
+       $('.drop_down').trigger("change");
+       $("#fileuploader").uploadFile({
+            url:"/api/upload/",
+            fileName:"myfile",
+            dragDrop: false,
+            onSuccess:function(){
+                $('.ajax-file-upload-statusbar').hide();
+                $('.drop_down option:selected').prop('selected','false');
+                console.log("om");
+                $('.drop_down').trigger('change');
+            },
+       });
+</script>

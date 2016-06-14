@@ -1,0 +1,22 @@
+<div ng-controller="homeCtrl">
+ <div class="row header" style="margin-left: 0px;">
+   <div class="col-md-12">
+     <h2>NextWealth</h2>
+     <p ng-click="logout()">logout</p>
+   </div>
+ </div>
+ <br></br>
+ <div class="row" style="margin-left: 0px;">
+  <div class="col-md-12">
+   <select class="form-control" ng-model="selectedData" ng-change="dtInstance.changeData('/api/candidate/?jd='+selectedData.name)" data-ng-options="jd.job_title for jd in JDs">
+    <option value="">Select JD</option>
+   </select>
+  </div>
+ </div>
+ </br>
+ <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+  <div class="col-md-12">
+   <table datatable="" dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="row-border hover"></table>
+  </div>
+ </div>
+</div>

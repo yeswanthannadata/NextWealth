@@ -1,0 +1,220 @@
+import json
+import MySQLdb
+import datetime
+from dateutil import parser as date_parser
+
+from django.shortcuts import render
+from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import auth
+from django.contrib.auth import authenticate
+from django.contrib.auth.views import logout
+
+from src import *
+from file_import import *
+from django.db.models import Q
+from models import *
+from models import JD as JobDesTable
+from auth.decorators import loginRequired
+from common.utils import getHttpResponse as HttpResponse
+from common.decorators import allowedMethods
+
+SOH_XL_HEADERS = ['Name', 'WalkinDate', 'Status', 'JD']
+SOH_XL_MAN_HEADERS = ['Name', 'WalkinDate', 'Status', 'JD']
+customer_data = {}
+
+@loginRequired
+@allowedMethods(["GET"])
+def jds(request):
+
+    user_group = request.user.groups.values_list('name',flat=True)
+    user_id = request.user.id
+
+    if user_group[0] == "Agent":
+        agent_obj = Agent.objects.filter(name=user_id).values_list('id', flat=True)
+        jdObjs   = JobDesTable.objects.filter(agent=agent_obj[0]).values('id','job_title')
+
+    elif user_group[0] == "SPOC":
+        spoc_obj = SPOC.objects.filter(name=user_id).values_list('id', flat=True)
+        jdObjs   = JobDesTable.objects.filter(SPOC=spoc_obj[0]).values('id','job_title')
+
+    else:
+        jdObjs = JobDesTable.objects.values('id','job_title');
+
+    resp_data = []
+
+    for jdObj in jdObjs:
+        resp_data.append({"id": jdId, "name": jdObj["name"]})
+
+    return HttpResponse(data)
+
+@csrf_exempt
+def candidates(request):
+    if request.user.is_authenticated():
+        jd = request.GET.get('jd')
+
+        user_group = request.user.groups.values_list('name',flat=True)
+        user_id = request.user.id
+        user_name = request.user.username
+        session_key = request.GET.get('session_key')
+        li = JD.objects.filter(job_title=jd).values_list('id')
+        if user_group[0] == "Agent":
+            agent_id = Agent.objects.filter(name_id=user_id).values_list('id', flat=True) #take agent id
+            candidate_list = Candidate.objects.filter(jd_id__in=li, agent_id=agent_id)
+        elif user_group[0] == "SPOC":
+            spoc_id  = SPOC.objects.filter(name_id=user_id).values_list('id', flat=True) #take SPOC id
+            candidate_list = Candidate.objects.filter(jd_id__in=li, spoc_id=spoc_id)
+        else:
+            candidate_list =  Candidate.objects.filter(jd_id__in=li)
+        resp_data = []
+        for i in candidate_list:
+            resp_data.append({"id":i.id, "name": i.name, "walk_in_date": i.walk_in_date.strftime('%m/%d/%Y'), "status": i.status.replace('_',' ')})
+        data = json.dumps(resp_data)
+    else:
+        data = json.dumps({'status':'failed'})
+
+    return HttpResponse(data, content_type='application/json')
+
+@csrf_exempt
+def add_candidate(request):
+    if request.user.is_authenticated():
+        name    = request.GET.get('name')
+        date    = request.GET.get('date')
+        jd_name = request.GET.get('jd')
+        jd_id   = JD.objects.filter(job_title=jd_name).values('id')
+        date    = date_parser.parse(date.replace(' GMT ',' GMT+'))
+        print jd_id[0]['id']
+        date    = date_parser.parse('-'.join(str(date).split('-')[:-1]))
+
+        new_can = Candidate(jd_id=jd_id[0]['id'], name=name,walk_in_date=date)
+        new_can.save()
+        data = json.dumps({'status':'success'})
+    else:
+        data = json.dumps({'status':'failed'})
+    return HttpResponse(data, content_type='application/json')
+
+@csrf_exempt
+def vieww(request):
+        fname = request.FILES['myfile']
+        var = fname.name.split('.')[-1].lower()
+        if var not in ['xls', 'xlsx', 'xlsb']:
+                return HttpResponse("Invalid File")
+        else:
+                try:
+                        open_book = open_workbook(filename=None, file_contents=fname.read())
+                        open_sheet = open_book.sheet_by_index(0)
+                except:
+                        return HttpResponse("Invalid File")
+                sheet_headers = validate_soh_form(open_sheet, request)
+                #validate_soh_form(open_sheet, request)
+                for row_idx in range(1, open_sheet.nrows):
+                        #customer_data = copy.deepcopy(SOH_DATA)
+                        for column, col_idx in sheet_headers:
+                                cell_data = get_cell_data(open_sheet, row_idx, col_idx)
+                                if column == 'name':
+                                        customer_data['name'] = ''.join(cell_data)
+                                if column == 'walkindate':
+                                        #cell_data = format_date(cell_data)
+                                        cell_data = xlrd.xldate_as_tuple(int(cell_data.split('.')[0]), 0)
+                                        cell_data ='%s-%s-%s' % (cell_data[0], cell_data[1], cell_data[2])
+                                        customer_data['walkindate'] = ''.join(cell_data)
+                                if column == 'status':
+                                        customer_data['status'] = ''.join(cell_data)
+                                if column == 'jd':
+                                        customer_data['jd'] = ''.join(cell_data)
+                        print customer_data
+                        if customer_data['jd'] == 'Python Developer':
+                            jd_id = '5'
+                        elif customer_data['jd'] == 'Java Developer':
+                            jd_id = '1'
+                        elif customer_data['jd'] == 'Android Developer':
+                            jd_id = '3'
+                        conn = MySQLdb.connect(db = 'NEXT', host = 'localhost', user = 'root', passwd = 'hdrn59!', charset ='utf8', use_unicode = True)
+                        cursor = conn.cursor()
+                        query = 'insert into candidate(name,walk_in_date,jd_id,status,agent_id,spoc_id)values(%s,%s,%s,%s,%s,%s)'
+                        values = (customer_data['name'],customer_data['walkindate'],jd_id,customer_data['status'],'1','1')
+                        cursor.execute(query,values)
+                        conn.commit()
+
+        return HttpResponse("Hello")
+
+@csrf_exempt
+def get_order_of_headers(open_sheet, Default_Headers, mandatory_fileds=[]):
+    indexes, sheet_indexes = {}, {}
+    sheet_headers = open_sheet.row_values(0)
+    lower_sheet_headers = [i.lower() for i in sheet_headers]
+    if not mandatory_fileds:
+        mandatory_fileds = Default_Headers
+
+    max_index = len(sheet_headers)
+    is_mandatory_available = set([i.lower() for i in mandatory_fileds]) - set([j.lower() for j in sheet_headers])
+    for ind, val in enumerate(Default_Headers):
+        val = val.lower()
+        if val in lower_sheet_headers:
+            ind_sheet = lower_sheet_headers.index(val)
+            sheet_indexes.update({val: ind_sheet})
+        else:
+            ind_sheet = max_index
+            max_index += 1
+        #comparing with lower case for case insensitive
+        #Change the code as declare *_XL_HEADEERS and *_XL_MAN_HEADERS
+        indexes.update({val: ind_sheet})
+    return is_mandatory_available, sheet_indexes, indexes
+
+@csrf_exempt
+def get_cell_data(open_sheet, row_idx, col_idx):
+    try:
+        cell_data = open_sheet.cell(row_idx, col_idx).value
+        cell_data = str(cell_data)
+        if isinstance(cell_data, str):
+            cell_data = cell_data.strip()
+    except IndexError:
+        cell_data = ''
+    return cell_data
+
+def format_date(cell_data):
+    if not cell_data: return ''
+    cell_data = xlrd.xldate_as_tuple(int(cell_data), 0)
+    cell_data ='%s-%s-%s' % (cell_data[0], cell_data[1], cell_data[2])
+    '''else: 
+        del_ = ''
+        if "-" in cell_data:
+            del_ = "-" 
+        if "/" in cell_data:
+            del_ = "/" 
+        elif "." in cell_data:
+            del_ = "." 
+        #if not del_: return ''
+        cell_data = [int(i) for i in cell_data.split(del_)]
+        cell_data = '%s-%s-%s' % (cell_data[2], cell_data[1], cell_data[0])
+    date = datetime.datetime.strptime(str(cell_data), '%Y-%m-%d').date()'''
+
+    return date
+
+@csrf_exempt
+def validate_soh_form(open_sheet, request):
+    index_status = {}
+    str_date = []
+    end_date = []
+    min_norm = []
+    max_norm = []
+    date_com = []
+    abs_dict = {}
+    dat = {}
+    status = ''
+    sheet_headers = []
+    #brand_channels = bran_chan_func(request)
+    if open_sheet.nrows > 0:
+        is_mandatory_available, sheet_headers, all_headers = get_order_of_headers(open_sheet, SOH_XL_HEADERS, SOH_XL_MAN_HEADERS)
+        sheet_headers = sorted(sheet_headers.items(), key=lambda x: x[1])
+        all_headers = sorted(all_headers.items(), key=lambda x: x[1])
+        if is_mandatory_available:
+            status = ["Fields are not available: %s" % (", ".join(list(is_mandatory_available)))]
+            index_status.update({1: status})
+            return "Failed", status
+
+    else:
+        status = "Number of Rows: %s" % (str(open_sheet.nrows))
+        index_status.update({1: status})
+    return sheet_headers
+

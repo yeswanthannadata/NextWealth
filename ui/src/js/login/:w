@@ -1,0 +1,33 @@
+<div class="login-form-container">
+  <form method="POST" ng-submit="$ctrl.onSubmit($ctrl.credentials)" novalidate>
+    <div class="logo-container">
+      <img src="/img/logo.png" />
+    </div>
+    <div class="form-group">
+      <label>USERNAME</label>
+      <input type="text" ng-model="$ctrl.credentials.username"
+             class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>PASSWORD</label>
+      <input type="password" ng-model="$ctrl.credentials.password"
+             class="form-control" />
+    </div>
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary" value="submit"/>
+    </div>
+  </form>
+</div>
+
+<!--<div class="container-fluid">
+  <div class="login">
+    <div class="login-box" ng-controller = "loginCtrl">
+        <h1>NextWealth</h1>
+        <form name="form"method="POST" ng-submit="$ctrl.onSubmit($ctrl.credentials)" novalidate>
+          <input name="username" class="username form-control" type="text" placeholder="Username" ng-model="$ctrl.credentials.username"/> 
+          <input name="password" class="password form-control" type="password" placeholder="Password" ng-model="$ctrl.credentials.password"/>
+          <button type="submit" class="submit" value="submit">submit</button>
+        </form>
+    </div>
+  </div>
+</div>-->

@@ -1,0 +1,216 @@
+<!--Start Header-->
+<header class="navbar">
+    <div class="container-fluid expanded-panel">
+        <div class="row">
+            <div id="logo" class="col-xs-12 col-sm-2">
+                <a href="">Next Wealth</a>
+            </div>
+            <div id="top-panel" class="col-xs-12 col-sm-10">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 top-panel-right">
+                        <ul class="nav navbar-nav pull-right panel-menu">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle account" data-toggle="dropdown">
+                                    <div class="avatar">
+                                        <img src="/images/user.svg" alt="" />
+                                    </div>
+                                    <i class="fa fa-angle-down pull-right"></i>
+                                    <div class="user-mini pull-right">
+                                        <span class="welcome">{{ $ctrl.user.userName }}</span>
+                                        <span>{{ $ctrl.user.role }}</span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                      <logout></logout>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!--End Header-->
+<!--Start Container-->
+<div id="main" class="">
+    <div class="row">
+        <div ng-if="$ctrl.user.role === 'Admin'" id="sidebar-left" class="col-xs-2 col-sm-2">
+            <ul class="nav main-menu">
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/jd/" class=""target="_blank">
+                        <i class="fa fa-table"></i>
+                        <span>Job Description</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/agent/" target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>Agents</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/spoc/" class=""target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>Clients</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/location/" target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>Locations</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--Start Content-->
+        <div id="content"class="">
+            <div>
+               <div class="row" style="margin-left: 0px;">
+                  <div class="col-md-6">
+                     <select class="form-control drop_down" ng-model="$ctrl.JDdefault" ng-init="$ctrl.JDdefault" ng-change="dtInstance.changeData('/api/candidates/?jd='+$ctrl.JDdefault);jd_desc()" data-ng-options="jd for jd in $ctrl.JDs">
+                     </select>
+                <br>
+                    <div class="jd_des" ng-if="$ctrl.JDdefault" >
+                        <p><strong>Required: </strong>{{$ctrl.JDdes[$ctrl.JDdefault.split("-")[0].trim()]['candidates_required']}} Candidates 
+                            &nbsp;&nbsp;&nbsp; <strong>Exp: </strong>{{$ctrl.JDdes[$ctrl.JDdefault.split("-")[0].trim()]['min_experience']}} - 
+                            {{$ctrl.JDdes[$ctrl.JDdefault.split("-")[0].trim()]['maximum experience']}} years &nbsp;&nbsp;&nbsp; 
+                            <strong>Salary range: </strong>{{$ctrl.JDdes[$ctrl.JDdefault.split("-")[0].trim()]['min_salary']}} - 
+                            {{$ctrl.JDdes[$ctrl.JDdefault.split("-")[0].trim()]['max_salary']}} Lpa</p>
+                    </div>
+                </div>
+              </div>
+               <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+                  <div class="col-md-12">
+                     <table datatable=""  dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="table-striped table-bordered row-border hover" style="cursor:pointer"></table>
+                  </div>
+               </div>
+
+               <div class="modal fade" id="candidate_modal" role="dialog">
+                  <div class="modal-dialog">
+                     <!-- Modal content-->
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal">&times;</button>
+                           <h4 class="modal-title">Edit Details</h4>
+                        </div>
+                        <div class="modal-body">
+                           <form ng-submit="$ctrl.edit_data($ctrl.info)" class="form-horizontal" role="form">
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">First Name</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                            <input  data-id="" name="fname" placeholder="First Name" class="form-control fname" 
+                                                ng-model="$ctrl.info.fname" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Last Name</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                            <input name="lname" placeholder="Last Name" class="form-control lname"
+                                                ng-model="$ctrl.info.lname" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Walk in Date</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input  name="date" class="form-control date" ng-model="$ctrl.info.date" type="date">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Mobile Number</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                            <input class="form-control mobile" ng-model="$ctrl.info.mobile" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">E-Mail</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                                            <input class="form-control email" ng-model="$ctrl.info.email" type="email">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                 <div class="form-group">
+                                    <label class="col-md-4 control-label">Status</label>
+                                    <div class="col-md-7 selectContainer">
+                                       <div class="input-group">
+                                          <span class="input-group-addon"><i class="fa fa-list"></i></span>
+                                          <select name="status" class="form-control selectpicker status" ng-model="$ctrl.info.status">
+                                            <option ng-if="$ctrl.user.role === 'Admin'" value="New">New</option>
+                                            <option ng-if="$ctrl.user.role === 'Admin'" value="Telecon_Pass">Telecon Pass</option>
+                                            <option ng-if="$ctrl.user.role === 'Agent'" value="Telecon_Pass">Telecon Pass</option>
+                                            <option ng-if="$ctrl.user.role === 'Admin'"value="Telecon_Fail">Telecon Fail</option>
+                                            <option ng-if="$ctrl.user.role === 'Agent'"value="Telecon_Fail">Telecon Fail</option>
+                                            <option value="Scheduled">Scheduled</option>
+                                            <option value="Interview_Pass">Interview Pass</option>
+                                            <option value="Interview_Fail">Interview Fail</option>
+                                            <option value="No Show">No Show</option>
+                                            <option ng-if="$ctrl.user.role === 'Admin'" value="Closed">Closed</option>
+                                            <option ng-if="$ctrl.user.role === 'Agent'" value="Closed">Closed</option>
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+
+                                 <div class="form-group">
+                                    <label class="col-md-4 control-label">Remarks</label>
+                                    <div class="col-md-7 inputGroupContainer">
+                                       <div class="input-group">
+                                          <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                          <textarea class="form-control remarks" name="remarks" placeholder="Remarks"
+                                                 ng-model="$ctrl.info.remarks"></textarea>
+                                       </div>
+                                    </div>
+                                 </div>
+
+                                 <div class="alert alert-success success_message" role="alert" >Updated Successfully</div>
+
+                              <input style="float:right;margin:10px" type="submit" id="submit" value="Save Changes"
+                                class="btn btn-xs btn-primary" />
+                           </form>
+
+                        </div>
+                        <div class="modal-footer" style="border-top:none">
+                           <button id="close" ng-click="clickHandler()" type="button"style="margin-top:-20px" 
+                            class="btn btn-xs btn-default close_modal" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+
+
+            </div>
+
+            <div ng-if="$ctrl.isAgent">
+              <button type="button" class="add_candidate_button" ng-click= "add_candidate()" style="float:right">Add</button>
+              <p class="or" style="float:right;margin-top:15px">--OR--</p>
+              <div id="fileupload"style="float:right;margin:10px 20px"><span style="cursor:pointer">Upload</span></div>
+            </div>
+        </div>
+
+
+
+
+        <!--End Content-->

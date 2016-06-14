@@ -1,0 +1,83 @@
+<div ng-controller="homeCtrl">
+ <div class="row header" style="margin-left: 0px;">
+   <div class="col-md-12">
+     <h2>NextWealth</h2>
+     <p ng-click="logout()">logout</p>
+   </div>
+ </div>
+ <a href="http://nw.headrun.com:8086/admin/" style="float:right" target="_blank">admin</a>
+ <br></br>
+ <div class="row" style="margin-left: 0px;">
+  <div class="col-md-12">
+   <select class="form-control" ng-model="selectedData" ng-change="dtInstance.changeData('/api/candidates/?jd='+selectedData.job_title)" data-ng-options="jd.job_title for jd in JDs">
+    <option value="">Select JD</option>
+   </select>
+  </div>
+ </div>
+ </br>
+ <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+  <div class="col-md-12">
+   <table datatable="" dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="row-border hover"></table>
+  </div>
+ </div>
+ <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add</button>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog"> 
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Enter Details</h4>
+        </div>
+        <div class="modal-body">
+                <form class="form-horizontal" role="form" ng-submit="submit()">
+                  <div class="form-group">
+                    <label  class="col-sm-2 control-label"
+                              for="name">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" ng-model="text" class="form-control" 
+                        id="name" placeholder="Name"/>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label"
+                          for="walkin_date" >Walkin date</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"
+                            id="walkin_date" placeholder="Walkin date"/>
+                    </div>
+                  </div>
+                 <div class="form-group">
+                    <label class="col-sm-2 control-label"
+                        for="status" >Status</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"
+                            id="status" placeholder="Status"/>
+                    </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <input type="submit" class="btn btn-default" >Submit</input>
+                    </div>
+                  </div>
+                </form>
+<!--
+<script src="../plugins/angular.min.js"></script>
+<script>
+  angular.module('nextwealth', [])
+    .controller('SubmitController', ['$scope', function($scope) {
+      $scope.list = [];
+      $scope.text = 'hello';
+      $scope.submit = function() {
+        if ($scope.text) {
+          $scope.list.push(this.text);
+          $scope.text = '';
+        }
+      };
+    }]);
+</script>-->
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

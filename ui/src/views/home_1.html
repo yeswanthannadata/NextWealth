@@ -1,0 +1,96 @@
+<div ng-controller="homeCtrl">
+ <div class="row header" style="margin-left: 0px;">
+   <div class="col-md-12">
+     <h2>NextWealth</h2>
+     <p ng-click="logout()">logout</p>
+   </div>
+ </div>
+ <br></br>
+ <div class="row" style="margin-left: 0px;">
+  <div class="col-md-12">
+   <select id = "jddrop" class="form-control" ng-model="selectedData" ng-change="dtInstance.changeData('/api/candidates/?jd='+selectedData)" data-ng-options="jd for jd in JDs">
+    <option value="">Select JD</option>
+   </select>
+  </div>
+ </div>
+ </br>
+ <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+  <div class="col-md-12">
+   <p class="text-danger">You clicked on: <strong>{{ nextwealth.message }}</strong></p>
+   <table datatable="" dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="row-border hover"></table>
+  </div>
+ </div>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog"> 
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Enter Details</h4>
+        </div>
+        <div class="modal-body">
+           <form ng-submit="submit()">
+                <p>Name</p><input id = "text" type="text" ng-model="text" placeholder="name" /><br>
+                <p>Walk in Date</p><input id="date" type="date" ng-model="date" name="bday"><br>
+                <!--<p>Status</p><input type="text" ng-model="statu" placeholder="status" /><br>-->
+                <p>Job Description</p>
+                <select id = "sel" class="form-control" ng-model="selected" data-ng-options="jd for jd in JDs"><br>
+                <option value="">Select JD</option>
+                <input type="submit" id="submit" value="Submit" />
+                <!--<pre>list={{list}}</pre>-->
+           </form>
+                <!--<form class="form-horizontal" role="form" ng-submit="submit()">
+                  <div class="form-group">
+                    <label  class="col-sm-2 control-label"
+                              for="name">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" ng-model="text" class="form-control" 
+                        id="name" placeholder="Name"/>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label"
+                          for="walkin_date" >Walkin date</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"
+                            id="walkin_date" placeholder="Walkin date"/>
+                    </div>
+                  </div>
+                 <div class="form-group">
+                    <label class="col-sm-2 control-label"
+                        for="status" >Status</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control"
+                            id="status" placeholder="Status"/>
+                    </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <input type="submit" class="btn btn-default" >Submit</input>
+                    </div>
+                  </div>
+                </form>-->
+<!--
+<script src="../plugins/angular.min.js"></script>
+<script>
+  angular.module('nextwealth', [])
+    .controller('SubmitController', ['$scope', function($scope) {
+      $scope.list = [];
+      $scope.text = 'hello';
+      $scope.submit = function() {
+        if ($scope.text) {
+          $scope.list.push(this.text);
+          $scope.text = '';
+        }
+      };
+    }]);
+</script>-->
+
+        </div>
+        <div class="modal-footer">
+            <p id="display">
+            <button id="close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="container-fluid">
+  <div class="login">
+    <div class="login-box" ng-controller = "loginCtrl">
+        <h1>NextWealth</h1>
+        <form name="form" ng-submit="submit(username,password)" role="form">
+          <input name="username" class="username" type="text" placeholder="Username" ng-model="username"/> 
+          <input name="password" class="password" type="password" placeholder="Password" ng-model="password"/>
+          <button type="submit" class="submit">submit</button>
+        </form>
+    </div>
+  </div>
+</div>

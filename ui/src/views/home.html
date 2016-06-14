@@ -1,0 +1,65 @@
+<div ng-controller="homeCtrl">
+<div class="row header" style="margin-left: 0px;">
+   <div class="col-md-12">
+     <h2>NextWealth</h2>
+     <p ng-click="logout()">logout</p>
+   </div>
+ </div>
+    <a ng-if="user_role == 'Admin' " href="http://nw.headrun.com:8086/admin/" style="float:right" target="_blank">admin</a>
+<div id="fileuploader">Upload</div>
+ <br></br>
+ <div class="row" style="margin-left: 0px;">
+  <div class="col-md-12">
+   <select class="form-control drop_down" ng-model="JDdefault" ng-init="JDdefault" ng-change="dtInstance.changeData('/api/candidates/?jd='+JDdefault)" data-ng-options="jd for jd in JDs">
+    <!--<option id = "jddrop" value="">Select JD</option>-->
+   </select>
+  </div>
+ </div>
+ </br>
+ <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+  <div class="col-md-12">
+   <p class="text-danger">You clicked on: <strong>{{ message }}</strong></p>
+   <table datatable="" dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="table-bordered row-border hover"></table>
+  </div>
+ </div>
+ <button ng-if="user_role == 'Admin' " type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Add</button>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog"> 
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Enter Details</h4>
+        </div>
+        <div class="modal-body">
+           <form ng-submit="submit()">
+                <p>Name</p><input id = "text" type="text" ng-model="text" placeholder="name" /><br>
+                <p>Walk in Date</p><input id="date" type="date" ng-model="date" name="bday"><br>
+                <p>Job Description</p>
+                <select id = "sel" class="form-control" ng-model="selected" data-ng-options="jd for jd in JDs"><br>
+                <option value="">Select JD</option>
+                <input type="submit" id="submit" value="Submit" />
+           </form>
+        </div>
+        <div class="modal-footer">
+            <p id="display"></p>
+            <button id="close" ng-click="clickHandler()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+$(document).ready(function()
+{
+    var sel = $('.drop_down option:selected').val();
+    console.log(sel);
+    $('.drop_down').trigger("change");
+    $("#fileuploader").uploadFile({
+    url:"/api/upload/",
+    dragDrop:false,
+    fileName:"myfile"
+    });
+});
+</script>

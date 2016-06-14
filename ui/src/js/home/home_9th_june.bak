@@ -1,0 +1,290 @@
+<!--Start Header-->
+<header class="navbar">
+    <div class="container-fluid expanded-panel">
+        <div class="row">
+            <div id="logo" class="col-xs-12 col-sm-2">
+                <a href=""><img src="/images/nextwealth-logo.png" style="width:55px;padding-top:3px;margin-left:55px;margin-top:-7px"/></a>
+            </div>
+            <div id="top-panel" class="col-xs-12 col-sm-10">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 top-panel-right">
+                        <ul class="nav navbar-nav pull-right panel-menu">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle account" data-toggle="dropdown">
+                                    <div class="avatar">
+                                        <img src="/images/user.svg" alt="" />
+                                    </div>
+                                    <i class="fa fa-angle-down pull-right"></i>
+                                    <div class="user-mini pull-right">
+                                        <span class="welcome">{{user_name}}</span>
+                                        <span>{{user_role}}</span>
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                      <logout></logout>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!--End Header-->
+<!--Start Container-->
+<div id="main" class="">
+    <div class="row">
+        <div ng-if="user_role == 'Admin'" id="sidebar-left" class="col-xs-2 col-sm-2">
+            <ul class="nav main-menu">
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/jd/" class=""target="_blank">
+                        <i class="fa fa-table"></i>
+                        <span>JD</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/agent/" target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>Agent</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/spoc/" class=""target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>SPOC</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/location/" target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>Locations</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://nw.headrun.com:8086/admin/api/candidate/" target="_blank">
+                        <i class="fa fa-table"></i>
+                         <span>Candidates</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--Start Content-->
+        <div id="content"class="">
+            <div>
+               <div class="row" style="margin-left: 0px;">
+                  <div class="col-md-4">
+                     <select class="form-control drop_down" ng-model="JDdefault" ng-init="JDdefault" ng-change="dtInstance.changeData('/api/candidates/?jd='+JDdefault)" data-ng-options="jd for jd in JDs">
+                     </select>
+                  </div>
+               </div>
+               </br>
+               <div class="row" style="margin-left: 0px;border: 1px solid rgba(186, 186, 186, 1);padding: 10px; overflow: auto;">
+                  <div class="col-md-12">
+                     <table datatable="" dt-options="dtOptions" dt-columns="dtColumns" dt-instance="dtInstance" class="table-striped table-bordered row-border hover"></table>
+                  </div>
+               </div>
+               <div class="modal fade" id="myModal" role="dialog">
+                  <div class="modal-dialog">
+                     <!-- Modal content-->
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal">&times;</button>
+                           <h4 class="modal-title">Enter Details</h4>
+                        </div>
+                        <div class="modal-body">
+                           <form ng-submit="submit()">
+                              <p>Name</p>
+                              <input id = "name_" type="text" ng-model="text" placeholder="name" /><br>
+                              <p>Walk in Date</p>
+                              <input id="date_" type="date" ng-model="date" name="bday"><br>
+                              <p>Mobile</p>
+                              <input id = "mobile_" type="text" ng-model="mobile" placeholder="mobile" /><br>
+                              <p>Email</p>
+                              <input id = "email_" type="text" ng-model="email" placeholder="email" /><br>
+                              <p>Job Description</p>
+                              <select id = "jd" class="form-control" ng-model="selected" data-ng-options="jd for jd in JDs"><br>
+                              <option value="">Select JD</option>
+                              <input type="submit" id="submit" value="Submit" />
+                           </form>
+                        </div>
+                        <div class="modal-footer">
+                           <p id="display"></p>
+                           <button id="close" ng-click="clickHandler()" type="button" 
+                            class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="modal fade" id="candidate_modal" role="dialog">
+                  <div class="modal-dialog">
+                     <!-- Modal content-->
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal">&times;</button>
+                           <h4 class="modal-title">Edit Details</h4>
+                        </div>
+                        <div class="modal-body">
+                           <form ng-submit="edit_data()" class="form-horizontal" role="form">
+                              <!--<label  class="col-sm-4 control-label"for="name">Name</label>
+                              <div class="col-sm-8"style="margin-bottom:10px">
+                                <input id = "name" class="name form-control" type="text" ng-model="name" placeholder="name" />
+                              </div>-->
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Name</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                            <input  data-id="" name="name" placeholder="Name" class="form-control name"  type="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Walk in Date</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input  name="date" class="form-control date" type="date">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                              <!--<label  class="col-sm-4 control-label"for="date">Walk in Date</label> 
+                              <div class="col-sm-8" style="margin-bottom:10px">
+                                <input id="date" type="date" class="date form-control"ng-model="date" name="bday">
+                              </div>-->
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">Mobile Number</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                            <input class="form-control mobile" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                              <!--<label  class="col-sm-4 control-label"for="mobile">Mobile Number</label> 
+                              <div class="col-sm-8" style="margin-bottom:10px">
+                                <input id="mobile" type="text" class="mobile form-control"ng-model="mobile">
+                              </div>-->
+
+
+                                <div class="form-group">
+                                    <label class="col-md-4 control-label">E-Mail</label>  
+                                    <div class="col-md-7 inputGroupContainer">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                                            <input class="form-control email" type="email">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                              <!--<label  class="col-sm-4 control-label"for="email">E-mail</label> 
+                              <div class="col-sm-8" style="margin-bottom:10px">
+                                <input id="email" type="email" class="email form-control"ng-model="email">
+                              </div>-->
+
+                                 <div class="form-group">
+                                    <label class="col-md-4 control-label">Status</label>
+                                    <div class="col-md-7 selectContainer">
+                                       <div class="input-group">
+                                          <span class="input-group-addon"><i class="fa fa-list"></i></span>
+                                          <select name="state" class="form-control selectpicker" >
+                                            <option value="New_Candidate">New Candidate</option>
+                                            <option value="Telecon_Pass">Telecon Pass</option>
+                                            <option value="Telecon_Fail">Telecon Fail</option>
+                                            <option value="Scheduled">Scheduled</option>
+                                            <option value="Interview_Pass">Interview Pass</option>
+                                            <option value="Interview_Fail">Interview Fail</option>
+                                            <option value="Closed">No Show</option>
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+
+                              <!--<label  class="col-sm-4 control-label"for="status">Status</label> 
+                              <div class="col-sm-8" style="margin-bottom:10px">
+                              <select name="status" id="status"class="status form-control"ng-model="status">
+                                <option value="New_Candidate">New Candidate</option>
+                                <option value="Telecon_Pass">Telecon Pass</option>
+                                <option value="Telecon_Fail">Telecon Fail</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Interview_Pass">Interview Pass</option>
+                                <option value="Interview_Fail">Interview Fail</option>
+                                <option value="Closed">No Show</option>
+                              </select>
+                              </div>-->
+
+                                 <div class="form-group">
+                                    <label class="col-md-4 control-label">Remarks</label>
+                                    <div class="col-md-7 inputGroupContainer">
+                                       <div class="input-group">
+                                          <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                          <textarea class="form-control remarks" name="remarks" placeholder="Remarks"></textarea>
+                                       </div>
+                                    </div>
+                                 </div>
+
+
+                              <!--<label  class="col-sm-4 control-label"for="remarks">Remarks</label>
+                              <div class="col-sm-8" style="margin-bottom:10px">
+                                <textarea id="remarks" type="text" class="remarks form-control"ng-model="remarks"/>
+                              </div>
+                              <input id="can_id" class="hide id" ng-model="id">-->
+
+                              <input style="float:right;margin:10px" type="submit" id="submit" value="Save Changes"
+                                class="btn btn-xs btn-primary" />
+                           </form>
+
+
+
+
+
+
+
+
+                        </div>
+                        <div class="modal-footer" style="border-top:none">
+                           <p id="display1"></p>
+                           <button id="close" ng-click="clickHandler()" type="button"style="margin:10px" 
+                            class="btn btn-xs btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+
+
+            </div>
+            
+            <button type="button" class="add_button" data-toggle="modal" 
+                data-target="#candidate_modal"style="float:right">Add</button>
+            <p class="or" style="float:right;margin-top:15px">--OR--</p>
+            <div id="fileupload"style="float:right;margin:10px 20px"><span style="cursor:pointer">Upload</span></div>
+        </div>
+
+
+
+
+        <!--End Content-->
+<script>
+    $(function () {
+       $("#fileupload").uploadFile({
+            url:"/api/upload/",
+            fileName:"myfile",
+            dragDrop: false,
+            onSuccess:function(){
+                $('.ajax-file-upload-statusbar').hide();
+            },
+       });
+    });
+</script>
